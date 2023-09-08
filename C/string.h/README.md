@@ -1,4 +1,7 @@
 # string.h
+## Prefixed Functions
+#### In this library, all functions have been prefixed with "f" to prevent naming conflicts with standard C library functions 
+
 # fmemchr
 This function searches for the first occurrence of the character 'c' in the first 'n' bytes of the memory block pointed by 's'.
 
