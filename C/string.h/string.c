@@ -241,7 +241,6 @@ unsigned int fstrcspn(const char *s1, const char *s2) {
   if (s1 && s2) {
     const char *ps1 = s1;
     while (*ps1 != '\0') {
-
       char found = 0;
       const char *ps2 = s2;
       while (*ps2 != '\0') {
@@ -251,7 +250,6 @@ unsigned int fstrcspn(const char *s1, const char *s2) {
         }
         ps2++;
       }
-      
       if (found)
         break;
       len++;
