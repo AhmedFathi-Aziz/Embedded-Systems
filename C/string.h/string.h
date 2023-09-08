@@ -9,7 +9,7 @@ void *fmemmove(void *dest, const void *src, int n);
 
 void *fmemset(void *s, unsigned char c, int n);
 
-char *fstrcat(char *dest, const char *srd);
+char *fstrcat(char *dest, const char *src);
 
 char *fstrncat(char *dest, const char *src, unsigned int n);
 
