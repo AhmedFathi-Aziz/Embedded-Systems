@@ -7,8 +7,6 @@
 
 #include <errno.h>
 #include <assert.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <limits.h>
 
 void *fmemchr(const void *s, unsigned char c, size_t n);
