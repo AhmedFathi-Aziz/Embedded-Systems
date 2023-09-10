@@ -114,7 +114,7 @@ This function compares the first 'n' bytes of memory areas 's1' and 's2'
 - `n` (unsigned int): Number of bytes to compare
 
 ### Return value
-- (int): 0 if 's1' and 's2' are equal, a negative value if 's1' is less than 's2', or positive value is 's1' is greater than 's2'
+- (int): 0 if 's1' and 's2' are equal, a negative value if 's1' is less than 's2', or positive value if 's1' is greater than 's2'
 
 # fstrcmp
 This function compares the strings 's1' and 's2'

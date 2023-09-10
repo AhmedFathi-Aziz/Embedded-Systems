@@ -1,379 +1,309 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 #include "string.h"
 
-void *fmemchr(const void *s, unsigned char c, unsigned int n) {
+void *fmemchr(const void *s, unsigned char c, size_t n) {
+  assert(s != NULL);
+  assert(n);
+  const unsigned char *ps = s;
   void *out = NULL;
-  if (s) {
-    const unsigned char *ps = (const unsigned char *)s;
-    while (n--) {
-      if (*ps == c) {
-        out = (void *)ps;
-        break;
-      }
-      ps++;
+  while (n--) {
+    if (*ps == c) {
+      out = (void *)ps;
+      break;
     }
+    ps++;
   }
   return out;
 }
 
-int fmemcmp(const void *s1, const void *s2, unsigned int n) {
-  int state = 0;
-  if (s1 && s2) {
-    if (s1 != s2) {
-      const unsigned char *ps1 = (const unsigned char *)s1;
-      const unsigned char *ps2 = (const unsigned char *)s2;
-      while (n--) {
-        if (*ps1 != *ps2) {
-          if (*ps1 > *ps2)
-            state = 1;
-          else
-            state = -1;
-          break;
-        }
-        ps1++;
-        ps2++;
-      }
-    }
-  } else {
-    if (s1)
-      state = 1;
-    else if (s2)
-      state = -1;
+void *fmemcpy(void *dest, const void *src, size_t n) {
+  assert(dest != NULL);
+  assert(src != NULL);
+  assert(n);
+  unsigned char *pdest = dest;
+  unsigned char *psrc = (void *)src;
+  while (n--) {
+    *pdest++ = *psrc++;
   }
-  return state;
+  
+  return dest;
 }
 
-void *fmemcpy(void *dest, const void *src, int n) {
-  if (dest && src) {
-    unsigned char *pdest = (unsigned char *)dest;
-    const unsigned char *psrc = (const unsigned char *)src;
-    while (n--) {
-      *pdest++ = *psrc++;
-    }
+void *fmemmove(void *dest, const void *src, size_t n) {
+  assert(dest != NULL);
+  assert(src != NULL);
+  assert(n);
+  unsigned char *psrc = (void *)src;
+  unsigned char *pdest = dest;
+  psrc += n;
+  pdest += n;
+  while (n--) {
+    *--pdest = *--psrc;
   }
   return dest;
 }
 
-void *fmemmove(void *dest, const void *src, int n) {
-  if (dest && src) {
-    unsigned char *buffer = malloc(sizeof(char) * n);
-    for (int i = 0; i < n; i++)
-      *(buffer + i) = *((const unsigned char *)src + i);
-    
-    for (int i = 0; i < n; i++)
-      *((unsigned char *)dest + i) = *(buffer + i);
-
-    free(buffer);
-  }
-  return dest;
-}
-
-void *fmemset(void *s, unsigned char c, int n) {
-  if (s) {
-    unsigned char *pdest = (unsigned char *)s;
-    while (n--) {
-      *pdest++ = c;
-    }
-  }
-  return s;
-}
-
-char *fstrcat(char *dest, const char *src) {
-  if (dest && src) {
-    char *pdest = dest;
-    while (*pdest)
-      pdest++;
-    while (*src)
-      *pdest++ = *src++;
-    *pdest = '\0';
-  }
-  return dest;
-}
-
-char *fstrncat(char *dest, const char *src, unsigned int n) {
-  if (dest && src) {
-    char *pdest = dest;
-    while (*pdest)
-      pdest++;
-    while (*src && n--) {
-      *pdest++ = *src++;
-    }
-    *pdest = '\0';
-  }
-  return dest;
-}
-
-char *fstrchr(const char *s, unsigned char c) {
-  char *out = NULL;
-  if (s) {
-    while (*s) {
-      if (*s == c) {
-        out = (char *)s;
-        break;
-      }
-      s++;
-    }
-  }
-  return out;
-}
-
-int fstrcmp(const char *s1, const char *s2) {
-  int state = 0;
-  if (s1 && s2) {
-    if (s1 != s2) {
-      const char *ps1 = s1;
-      const char *ps2 = s2;
-
-      while (*ps1 != '\0' && *ps2 != '\0') {
-        if (*ps1 != *ps2) {
-          if (*ps1 > *ps2)
-            state = 1;
-          else
-            state = -1;
-          break;
-        }
-        ps1++;
-        ps2++;
-      }
-      if (!state) {
-        if (*ps1 != '\0')
-          state = 1;
-        else if (*ps2 != '\0')
-          state = -1;
-      }
-    }
-  } else {
-    if (s1)
-      state = 1;
-    else if (s2)
-      state = -1;
-  }
-  return state;
-}
-
-int fstrncmp(const char *s1, const char *s2, unsigned int n) {
-  int state = 0;
-  if (s1 && s2) {
-    const char *ps1 = s1;
-    const char *ps2 = s2;
+int fmemcmp(const void *s1, const void *s2, size_t n) {
+  assert(s1 != NULL);
+  assert(s2 != NULL);
+  assert(n);
+  int out = 0;
+  if (s1 != s2) {
+    const unsigned char *ps1 = s1;
+    const unsigned char *ps2 = s2;
     while (n--) {
       if (*ps1 != *ps2) {
-        if (*ps1 > *ps2)
-          state = 1;
-        else
-          state = -1;
+        out = (*ps1 - *ps2);
         break;
       }
       ps1++;
       ps2++;
     }
-  } else {
-    if (s1)
-      state = 1;
-    else if (s2)
-      state = -1;
   }
-  return state;
+  return out;
+}
+
+void *fmemset(void *s, unsigned char c, size_t n) {
+  assert(s != NULL);
+  unsigned char *pdest = s;
+  while (n--) {
+    *pdest++ = c;
+  }
+  return s;
+}
+
+char *fstrcat(char *dest, const char *src) {
+  assert(dest != NULL);
+  assert(src != NULL);
+  char *pdest = dest;
+  while (*pdest)
+    pdest++;
+  while (*src)
+    *pdest++ = *src++;
+  *pdest = '\0';
+
+  return dest;
+}
+
+char *fstrncat(char *dest, const char *src, size_t n) {
+  assert(dest != NULL);
+  assert(src != NULL);
+  char *pdest = dest;
+  while (*pdest)
+    pdest++;
+  while (*src && n--) {
+    *pdest++ = *src++;
+  }
+  *pdest = '\0';
+  
+  return dest;
+}
+
+char *fstrchr(const char *s, unsigned char c) {
+  assert(s != NULL);
+  char *out = NULL;
+  while (*s) {
+    if (*s == c) {
+      out = (char *)s;
+      break;
+    }
+    s++;
+  }
+  
+  return out;
+}
+
+int fstrcmp(const char *s1, const char *s2) {
+  assert(s1 != NULL);
+  assert(s2 != NULL);
+  int out = 0;
+  if (s1 != s2) {
+    const char *ps1 = s1;
+    const char *ps2 = s2;
+    while (*ps1 != '\0' && *ps2 != '\0') {
+      if (*ps1 != *ps2) {
+        out = (*ps1 - *ps2);
+        break;
+      }
+      ps1++;
+      ps2++;
+    }
+    if (out == 0 && ((*ps1 == '\0' && *ps2 != '\0') ||
+      (*ps1 != '\0' && *ps2 == '\0'))) {
+      out = *ps1 ? 1 : -1;
+    } // helper function [TODO]
+  }
+  return out;
+}
+
+int fstrncmp(const char *s1, const char *s2, size_t n) {
+  int out = 0;
+  const char *ps1 = s1;
+  const char *ps2 = s2;
+  // helper function [check the '\0' after n bytes]
+  while (n--) {
+    if (*ps1 != *ps2) {
+      out = (*ps1 - *ps2);
+      break;
+    }
+    ps1++;
+    ps2++;
+  }
+  return out;
 }
 
 int fstrcoll(const char *s1, const char *s2) {
-  int state = 0;
-  if (s1 && s2) {
-    if (s1 != s2) {
-      const char *ps1 = s1;
-      const char *ps2 = s2;
-
-      while (*ps1 != '\0' && *ps2 != '\0') {
-        if (*ps1 != *ps2) {
-          if (*ps1 > *ps2)
-            state = 1;
-          else
-            state = -1;
-          break;
-        }
-        ps1++;
-        ps2++;
-      }
-      if (!state) {
-        if (*ps1 != '\0')
-          state = 1;
-        else if (*ps2 != '\0')
-          state = -1;
-      }
-    }
-  } else {
-    if (s1)
-      state = 1;
-    else if (s2)
-      state = -1;
-  }
-  return state;
+  fstrcmp(s1, s2);
+  // implement string collation [TODO]
 }
 
 char *fstrcpy(char *dest, const char *src) {
-  if (dest && src) {
-    char *pdest = dest;
-    while (*src != '\0') {
-      *pdest++ = *src++;
-    }
-    *pdest = '\0';
+  assert(dest != NULL);
+  assert(src != NULL);
+  char *pdest = dest;
+  while (*src != '\0') {
+    *pdest++ = *src++;
   }
+  *pdest = '\0';
   return dest;
 }
 
-char *fstrncpy(char *dest, const char *src, unsigned int n) {
-  if (dest && src) {
-    char *pdest = dest;
-    while (*src != '\0' && n--) {
-      *pdest++ = *src++;
-    }
-    while (n--) {
-      *pdest = '\0';
-    }
-  }
+char *fstrncpy(char *dest, const char *src, size_t n) {
+  assert(dest != NULL);
+  assert(src != NULL);
+  assert(n);
+  char *pdest = dest;
+  size_t i = 0;
+  for (; i < n && *src != '\0'; i++)
+    *pdest++ = *src++;
+  for (; i < n; i++)
+    *pdest++ = '\0';
   return dest;
 }
 
-unsigned int fstrcspn(const char *s1, const char *s2) {
-  unsigned int len = 0;
-  if (s1 && s2) {
-    const char *ps1 = s1;
-    while (*ps1 != '\0') {
-      char found = 0;
-      const char *ps2 = s2;
-      while (*ps2 != '\0') {
-        if (*ps1 == *ps2) {
-          found = 1;
-          break;
-        }
-        ps2++;
-      }
-      if (found)
-        break;
-      len++;
-      ps1++;
-    }
-  }
-  return len;
+size_t fstrcspn(const char *s1, const char *s2) {
+  assert(s1 != NULL);
+  assert(s2 != NULL);
+  unsigned char freq[] = { [UCHAR_MAX + 1] = 0 };
+  const unsigned char *i = (const unsigned char *)s2;
+  while (*i)
+    freq[*i++] = 1;
+  for (i = (const unsigned char *)s1; !freq[*i] && *i != '\0'; i++); 
+  return (size_t)(i - (const unsigned char *)s1);
 }
 
 char *fstrerror(int errnum) {
+  char *errors[8] = {
+    "No error",
+    "Operation not permitted",
+    "No such file or directory",
+    "Input/output error",
+    "Invalid argument",
+    "Permission denied",
+    "File exists",
+    "Unknown error"
+  };
+  char *out = NULL;
   switch (errnum) {
     case 0:
-      return "No error";
+      out = errors[0];
+      break;
     case EPERM:
-      return "Operation not permitted";
+      out = errors[1];
+      break;
     case ENOENT:
-      return "No such file or directory";
+      out = errors[2];
+      break;
     case EIO:
-      return "Input/output error";
+      out = errors[3];
+      break;
     case EINVAL:
-      return "Invalid argument";
+      out = errors[4];
+      break;
     case EACCES:
-      return "Permission denied";
+      out = errors[5];
+      break;
     case EEXIST:
-      return "File exists";
-    // Add more error codes as needed
+      out = errors[6];
+      break;
+    // Add more error codes as needed [TODO]
     default:
-      return "Unknown error";
+      out = errors[7];
+      break;
   }
+  return out;
 }
 
-unsigned int fstrlen(const char *s) {
-  unsigned int len = 0;
-  if (s) {
-    const char *ps = s;
-    while (*ps++ != '\0')
-      len++;
-  }
+size_t fstrlen(const char *s) {
+  assert(s != NULL);
+  size_t len = 0;
+  const char *ps = s;
+  while (*ps++ != '\0')
+    len++;
   return len;
 }
 
 char *fstrpbrk(const char *s1, const char *s2) {
-  char *pointer = NULL;
-  if (s1 && s2) {
-    const char *ps1 = s1;
-    char found = 0;
-    while (*ps1 != '\0') {
-      const char *ps2 = s2;
-      while (*ps2 != '\0') {
-        if (*ps1 == *ps2) {
-          found = 1;
-          break;
-        }
-        ps2++;
-      }
-      if (found) {
-        pointer = (char *)ps1;
-        break;
-      }
-      ps1++;
+  assert(s1 != NULL);
+  assert(s2 != NULL);
+  char *out = NULL;
+  const char *ps1 = s1;
+  while (*ps1 != '\0') {
+    if (fstrchr(s2, *(unsigned char *)ps1)) {
+      out = (char *)ps1;
+      break;
     }
+    ps1++;
   }
-  return pointer;
+  return out;
 }
 
 char *fstrrchr(const char *s, unsigned char c) {
-  char *pointer = NULL;
-  if (s) {
-    const char *ps = s;
-    while (*ps != '\0') {
-      if (*ps == c)
-        pointer = (char *)ps;
-      ps++;
-    }
+  assert(s != NULL);
+  char *out = NULL;
+  const char *ps = s;
+  while (*ps != '\0') {
+    if (*ps == c)
+      out = (char *)ps;
+    ps++;
   }
-  return pointer;
+  return out;
 }
 
-unsigned int fstrspn(const char *s1, const char *s2) {
-  unsigned int len = 0;
-  if (s1 && s2) {
-    const char *ps1 = s1;
-    while (*ps1 != '\0') {
-      const char *ps2 = s2;
-      char found = 0;
-      while (*ps2 != '\0') {
-        if (*ps1 == *ps2) {
-          found = 1;
-          break;
-        }
-        ps2++;
-      }
-      if (!found) {
-        break;
-      }
-      len++;
-      ps1++;
+size_t fstrspn(const char *s1, const char *s2) {
+  assert(s1 != NULL);
+  assert(s2 != NULL);
+  size_t out = 0;
+  const char *ps1 = s1;
+  while (*ps1 != '\0') {
+    if (!fstrchr(s2, *(unsigned char *)ps1)) {
+      break;
     }
+    out++;
+    ps1++;
   }
-  return len;
+  return out;
 }
 
 char *fstrstr(const char *haystack, const char *needle) {
-  char *pointer = NULL;
-  if (haystack && needle) {
-    const char *phaystack = haystack;
-    while (*phaystack != '\0') {
-      const char *iterator = phaystack;
-      const char *pneedle = needle;
-      while (*pneedle != '\0' && *iterator == *pneedle) {
-        iterator++;
-        pneedle++;
-      }
-      if (*pneedle == '\0') {
-        pointer = (char *)phaystack;
-        break;
-      }
-      phaystack++;
+  assert(haystack != NULL);
+  assert(needle != NULL);
+  char *out = NULL;
+  const char *phaystack = haystack;
+  while (*phaystack != '\0') {
+    const char *iterator = phaystack;
+    const char *pneedle = needle;
+    for (; *pneedle != '\0' && *iterator == *pneedle; iterator++, pneedle++);
+    if (*pneedle == '\0') {
+      out = (char *)phaystack;
+      break;
     }
+    phaystack++;
   }
-  return pointer;
+  return out;
 }
 
 char *fstrtok(char *s, const char *delim) {
+  assert(s != NULL);
   static char *nextToken = NULL;
   if (s != NULL)
     nextToken = s;
@@ -381,12 +311,10 @@ char *fstrtok(char *s, const char *delim) {
     return NULL;
 
   nextToken += fstrspn(nextToken, delim);
-    // skip leading delimiters
   if (*nextToken == '\0') {
     nextToken = NULL;
     return NULL;
   }
-
   char *token = nextToken;
   nextToken = fstrpbrk(token, delim);
   if (nextToken != NULL) {
@@ -398,16 +326,20 @@ char *fstrtok(char *s, const char *delim) {
   return token;
 }
 
-unsigned int fstrxfrm(char *dest, const char *src, unsigned int n) {
-  unsigned int len = 0;
-  if (dest && src) {
-    char *pdest = dest;
-    const char *psrc = src;
-    
-    while (*psrc != '\0' && n--)
-      *pdest++ = *psrc++,
-      len++;
-    *pdest = '\0';
+size_t fstrxfrm(char *dest, const char *src, size_t n) {
+  // [TODO]
+  assert(dest != NULL);
+  assert(src != NULL);
+  size_t src_len = fstrlen(src);
+  if (!n)
+    return src_len;
+  size_t out = 0;
+  char *pdest = dest;
+  const char *psrc = src;
+  while (*psrc != '\0' && n--) {
+    *pdest++ = *psrc++,
+    out++;
   }
-  return len;
+  *pdest = '\0';
+  return out;
 }
