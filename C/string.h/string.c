@@ -188,7 +188,7 @@ size_t fstrcspn(const char *s1, const char *s2) {
   while (*i)
     freq[*i++] = 1;
   for (i = (const unsigned char *)s1; !freq[*i] && *i != '\0'; i++); 
-  return (size_t)(i - (const unsigned char *)s1);
+  return (i - (const unsigned char *)s1);
 }
 
 char *fstrerror(int errnum) {
@@ -203,33 +203,8 @@ char *fstrerror(int errnum) {
     "Unknown error"
   };
   char *out = NULL;
-  switch (errnum) {
-    case 0:
-      out = errors[0];
-      break;
-    case EPERM:
-      out = errors[1];
-      break;
-    case ENOENT:
-      out = errors[2];
-      break;
-    case EIO:
-      out = errors[3];
-      break;
-    case EINVAL:
-      out = errors[4];
-      break;
-    case EACCES:
-      out = errors[5];
-      break;
-    case EEXIST:
-      out = errors[6];
-      break;
-    // Add more error codes as needed [TODO]
-    default:
-      out = errors[7];
-      break;
-  }
+  out = errnum > 6 ?
+  errors[7] : errors[errnum];
   return out;
 }
 
@@ -319,9 +294,7 @@ char *fstrtok(char *s, const char *delim) {
   nextToken = fstrpbrk(token, delim);
   if (nextToken != NULL) {
     *nextToken = '\0';
-      // replace the delim with null terminator
     nextToken++;
-      // move to the next character after the delim
   }
   return token;
 }
